@@ -149,6 +149,48 @@ def get_data_for_symbol(symbol: str, access_token: str = None, days: int = 365) 
         return df
 
 
+def append_live_quote(df: pd.DataFrame, fyers_symbol: str, access_token: str) -> pd.DataFrame:
+    """
+    Fetches the real-time quote for a symbol and appends or updates today's candle 
+    in the DataFrame, ensuring indicators use the absolute latest price and volume.
+    """
+    url = f"https://api-t1.fyers.in/data/quotes?symbols={fyers_symbol}"
+    headers = {"Authorization": f"{FYERS_APP_ID}:{access_token}"}
+    
+    try:
+        response = requests.get(url, headers=headers)
+        data = response.json()
+        
+        if data.get("s") == "ok" and "d" in data and len(data["d"]) > 0:
+            quote = data["d"][0].get("v", {})
+            if not quote:
+                return df
+                
+            today = pd.Timestamp.now().normalize()
+            
+            row = {
+                "Open": quote.get("open_price", quote.get("lp")),
+                "High": quote.get("high_price", quote.get("lp")),
+                "Low": quote.get("low_price", quote.get("lp")),
+                "Close": quote.get("lp"),
+                "Volume": quote.get("volume", 0)
+            }
+            
+            # If historical API already returned a partial candle for today, update it
+            if not df.empty and df.index[-1].normalize() == today:
+                for col in row:
+                    df.at[df.index[-1], col] = row[col]
+            else:
+                # Otherwise append it as a new live candle
+                new_row = pd.DataFrame([row], index=[today])
+                new_row.index.name = "Date"
+                df = pd.concat([df, new_row])
+    except Exception as e:
+        print(f"  Warning: Failed to fetch live quote for {fyers_symbol} - {e}")
+        
+    return df
+
+
 def fetch_all_stocks(days: int = 365):
     """
     Main entry point: Authenticates and fetches historical data for 

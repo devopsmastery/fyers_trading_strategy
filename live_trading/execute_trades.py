@@ -30,10 +30,12 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from live_trading.fyers_auth import get_access_token, FYERS_APP_ID
 from data.data_fetcher import (
     read_stocks, to_fyers_symbol, fetch_historical_data,
-    save_historical_data, HISTORICAL_DATA_DIR
+    save_historical_data, HISTORICAL_DATA_DIR, append_live_quote
 )
 
-STOCKS_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "stocks_to_test.txt")
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STOCKS_FILE = os.path.join(PROJECT_DIR, "stocks_to_test.txt")
+WATCHLIST_FILE = os.path.join(PROJECT_DIR, "stocks_watchlist.txt")
 ORDER_URL = "https://api-t1.fyers.in/api/v3/orders/sync"
 
 # Strategy Parameters
@@ -303,13 +305,34 @@ def main():
     print(colored("=" * 70, Colors.CYAN))
 
     access_token = get_access_token()
-    stocks = read_stocks(STOCKS_FILE)
 
-    if not stocks:
-        print(colored("No stocks found in stocks_to_test.txt", Colors.RED))
+    # Load stocks from both files
+    main_stocks = read_stocks(STOCKS_FILE)
+    watchlist_stocks = []
+    if os.path.exists(WATCHLIST_FILE):
+        watchlist_stocks = read_stocks(WATCHLIST_FILE)
+
+    # Track source for labeling
+    stock_source = {}
+    for s in main_stocks:
+        stock_source[s] = "MAIN"
+    for s in watchlist_stocks:
+        if s not in stock_source:
+            stock_source[s] = "WATCHLIST"
+
+    # Merge and deduplicate (preserving order)
+    all_stocks = list(dict.fromkeys(main_stocks + watchlist_stocks))
+
+    if not all_stocks:
+        print(colored("No stocks found in stocks_to_test.txt or stocks_watchlist.txt", Colors.RED))
         return
 
-    print(f"\n  Scanning {colored(str(len(stocks)), Colors.BOLD)} stocks for signals...\n")
+    main_count = len(main_stocks)
+    wl_count = len([s for s in all_stocks if stock_source.get(s) == "WATCHLIST"])
+    print(f"\n  Scanning {colored(str(len(all_stocks)), Colors.BOLD)} stocks "
+          f"({main_count} main + {wl_count} watchlist) for signals...\n")
+
+    stocks = all_stocks
 
     # Fetch current positions
     positions = get_positions(access_token)
@@ -321,16 +344,19 @@ def main():
 
     for i, symbol in enumerate(stocks, 1):
         fyers_symbol = to_fyers_symbol(symbol)
+        progress = colored(f"[{i:3d}/{len(stocks)}]", Colors.DIM)
         try:
             # Fetch latest 60 days of data (enough for indicators)
             df = fetch_historical_data(fyers_symbol, access_token, days=60)
+            
+            # Append/update with real-time live quote to ensure latest price/volume
+            df = append_live_quote(df, fyers_symbol, access_token)
+            
             df = compute_indicators(df)
             signal, score, reasons = generate_signal(df)
 
             current_qty = positions.get(fyers_symbol, 0)
             latest_close = df.iloc[-1]["Close"]
-
-            progress = colored(f"[{i:3d}/{len(stocks)}]", Colors.DIM)
 
             if signal == "BUY" and current_qty == 0:
                 buy_signals.append((fyers_symbol, latest_close, score, reasons))
