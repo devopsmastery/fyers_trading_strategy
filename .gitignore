@@ -1,0 +1,21 @@
+# Environments and Secrets
+.env
+.fyers_token
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDEs and Editors
+.vscode/
+.idea/
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Ignore local data
+data/historical_data/*.csv
+data/historical_data/*.xlsx

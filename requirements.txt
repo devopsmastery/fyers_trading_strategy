@@ -1,0 +1,5 @@
+backtrader==1.9.78.123
+pandas
+python-dotenv
+openpyxl
+pytest
