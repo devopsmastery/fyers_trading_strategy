@@ -125,14 +125,25 @@ class TestSignals:
         from live_trading.execute_trades import generate_signal, compute_indicators
         df = make_sample_data(10)  # Too few rows
         df = compute_indicators(df)
-        assert generate_signal(df) == "HOLD"
+        signal, score, reasons = generate_signal(df)
+        assert signal == "HOLD"
 
     def test_signal_returns_valid_value(self):
         from live_trading.execute_trades import generate_signal, compute_indicators
         df = make_sample_data(100)
         df = compute_indicators(df)
-        signal = generate_signal(df)
+        signal, score, reasons = generate_signal(df)
         assert signal in ("BUY", "SELL", "HOLD")
+
+    def test_signal_returns_score_and_reasons(self):
+        from live_trading.execute_trades import generate_signal, compute_indicators
+        df = make_sample_data(100)
+        df = compute_indicators(df)
+        signal, score, reasons = generate_signal(df)
+        assert isinstance(score, (int, float))
+        assert 0 <= score <= 100
+        assert isinstance(reasons, list)
+        assert len(reasons) > 0
 
 
 # ============================================================
