@@ -65,9 +65,9 @@ def push_to_git():
     success = run_command("git push -u origin main")
 
     if success:
-        print("\n✅ Successfully pushed code to GitHub!")
+        print("\n[SUCCESS] Successfully pushed code to GitHub!")
     else:
-        print("\n❌ Failed to push code. Check the errors above.")
+        print("\n[ERROR] Failed to push code. Check the errors above.")
 
 if __name__ == "__main__":
     push_to_git()

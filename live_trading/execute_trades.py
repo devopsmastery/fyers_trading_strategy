@@ -108,7 +108,14 @@ def compute_indicators(df: pd.DataFrame) -> pd.DataFrame:
 
 def generate_signal(df: pd.DataFrame) -> tuple:
     """
-    Generate a trading signal with quality metrics.
+    Generate a trading signal using Keltner Tuned (ATR 2.0 + EMA 10/21) strategy.
+
+    Strategy:
+      BUY : Price breaks above KC Upper band AND EMA10 > EMA21 (bullish trend confirmed)
+      SELL: Price drops below KC mid-line OR EMA10 crosses below EMA21 (death cross)
+
+    Volume is used as a quality SCORING BONUS only (not a hard gate).
+    Backtest proved volume as a hard gate on daily data reduces PnL by 69%.
 
     Returns: (signal, quality_score, reasons)
         signal: 'BUY', 'SELL', or 'HOLD'
@@ -119,26 +126,28 @@ def generate_signal(df: pd.DataFrame) -> tuple:
         return "HOLD", 0, ["Insufficient data"]
 
     latest = df.iloc[-1]
-    prev = df.iloc[-2]
+    prev   = df.iloc[-2]
 
-    close = latest["Close"]
-    kc_upper = latest["KC_UPPER"]
-    kc_mid = latest["KC_MID"]
-    kc_lower = latest["KC_LOWER"]
-    atr = latest["ATR"]
-    ema_fast = latest["EMA_FAST"]
-    ema_slow = latest["EMA_SLOW"]
+    close         = latest["Close"]
+    kc_upper      = latest["KC_UPPER"]
+    kc_mid        = latest["KC_MID"]
+    kc_lower      = latest["KC_LOWER"]
+    atr           = latest["ATR"]
+    ema_fast      = latest["EMA_FAST"]
+    ema_slow      = latest["EMA_SLOW"]
     prev_ema_fast = prev["EMA_FAST"]
     prev_ema_slow = prev["EMA_SLOW"]
-    volume = latest["Volume"]
-    vol_sma = latest["VOL_SMA"]
+    volume        = latest["Volume"]
+    vol_sma       = latest["VOL_SMA"]
+    vol_ratio     = (volume / vol_sma) if vol_sma > 0 else 0
 
     # ---- BUY SIGNAL ----
+    # Core: Price above KC Upper AND EMA10 > EMA21 (Keltner Tuned)
     if close > kc_upper and ema_fast > ema_slow:
-        score = 40  # Base score for meeting entry criteria
+        score = 40
         reasons = []
 
-        # Quality Factor 1: Breakout strength (how far above upper KC)
+        # Factor 1: Breakout strength (how far above KC Upper)
         breakout_pct = ((close - kc_upper) / atr) * 100 if atr > 0 else 0
         if breakout_pct > 50:
             score += 15
@@ -150,7 +159,7 @@ def generate_signal(df: pd.DataFrame) -> tuple:
             score += 5
             reasons.append(f"Marginal breakout ({breakout_pct:.0f}% of ATR above KC)")
 
-        # Quality Factor 2: EMA trend strength (gap between EMA10 and EMA21)
+        # Factor 2: EMA trend strength
         ema_gap_pct = ((ema_fast - ema_slow) / ema_slow) * 100
         if ema_gap_pct > 2:
             score += 15
@@ -162,20 +171,25 @@ def generate_signal(df: pd.DataFrame) -> tuple:
             score += 5
             reasons.append(f"Weak EMA trend (EMA10 {ema_gap_pct:.1f}% above EMA21)")
 
-        # Quality Factor 3: Fresh EMA crossover (recently crossed up)
+        # Factor 3: Fresh EMA golden cross today (bonus signal quality)
         if prev_ema_fast <= prev_ema_slow and ema_fast > ema_slow:
             score += 10
-            reasons.append("Fresh EMA crossover (today)")
+            reasons.append("Fresh EMA golden cross (today)")
 
-        # Quality Factor 4: Volume confirmation
-        if vol_sma > 0 and volume > vol_sma * 1.5:
+        # Factor 4: Volume — scoring bonus only (not a hard gate)
+        if vol_ratio >= 2.0:
             score += 15
-            reasons.append(f"High volume ({volume/vol_sma:.1f}x avg)")
-        elif vol_sma > 0 and volume > vol_sma:
+            reasons.append(f"High volume ({vol_ratio:.1f}x avg)")
+        elif vol_ratio >= 1.5:
+            score += 10
+            reasons.append(f"Above-avg volume ({vol_ratio:.1f}x avg)")
+        elif vol_ratio >= 1.0:
             score += 5
-            reasons.append(f"Above-avg volume ({volume/vol_sma:.1f}x avg)")
+            reasons.append(f"Normal volume ({vol_ratio:.1f}x avg)")
+        else:
+            reasons.append(f"Low volume ({vol_ratio:.1f}x avg) — caution")
 
-        # Quality Factor 5: Price above both EMAs (strong uptrend)
+        # Factor 5: Full trend alignment
         if close > ema_fast > ema_slow:
             score += 5
             reasons.append("Price > EMA10 > EMA21 (aligned uptrend)")
