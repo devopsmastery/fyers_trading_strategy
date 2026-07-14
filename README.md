@@ -26,9 +26,19 @@ fyers_trading_strategy/
 ├── live_trading/
 │   ├── fyers_auth.py              # OAuth authentication (raw HTTP, no SDK)
 │   └── execute_trades.py          # Live signal scanner & order placement
+├── scripts/
+│   ├── add_new_stocks.py          # Import & deduplicate new tickers
+│   ├── deep_analysis.py           # Single-stock deep dive (supports live LTP)
+│   ├── dry_run.py                 # Daily scanner wrapper
+│   ├── portfolio_analysis.py      # Scan Portfolio.txt for HOLD/CAUTION/SELL
+│   ├── portfolio_db.py            # Sync Portfolio.txt with JSON database
+│   ├── remove_duplicates.py       # Utility for list deduplication
+│   └── update_historical_data.py  # Updater for local cached CSVs
 ├── tests/
 │   └── test_strategies.py         # Unit tests
+├── Portfolio.txt                  # Active portfolio tracking in broker CSV format
 ├── stocks_to_test.txt             # List of stock symbols to trade
+├── stocks_watchlist.txt           # Watchlist for tracking potential buys
 ├── requirements.txt               # Python dependencies
 ├── .env                           # API credentials (git-ignored)
 └── .gitignore
@@ -65,3 +75,20 @@ fyers_trading_strategy/
    ```
 
 6. **Enable live trading:** Set `DRY_RUN=False` in `.env`.
+
+## AI Assistant Workflow & Menu Options
+
+The AI Agent comes with an interactive "Trading Menu" skill. Saying **"Hi"** to the assistant will present the following workflow options:
+
+1. **Dry Run**: Run the daily scanner (`execute_trades.py`) to get fresh BUY recommendations. You can interactively say "Buy X shares of Y at Z" to record a paper trade.
+2. **Update Historical Data**: Incrementally fetch the latest daily candles for all stocks.
+3. **Deep Analysis**: Run `deep_analysis.py` on a specific ticker. Supports passing a live market price via `--ltp` to simulate current intra-day indicators.
+4. **Add New Stocks**: Import symbols from `Newly_added_stocks.txt`, download their historical data, deduplicate, and move them to `stocks_watchlist.txt`.
+5. **Portfolio Scan**: Analyze your active holdings using `Portfolio.txt`.
+
+## Portfolio Tracking (`Portfolio.txt`)
+
+The system uses `Portfolio.txt` to track active positions. 
+- You can simply paste your broker's exported CSV directly into this file (it looks for columns like `Instrument,Qty.,Avg. cost`).
+- Running the **Portfolio Scan** (Option 5) will calculate live P&L % and categorize every held stock as **STRONG HOLD**, **CAUTION**, or **SELL** based on Keltner Channel and EMA crossover signals.
+- If a stock is missing historical data during the scan, the system will automatically authenticate and download the missing data.
