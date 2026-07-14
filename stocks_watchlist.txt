@@ -1,11 +1,3 @@
-# Additional Stocks Watchlist
-# Add stock symbols below (one per line)
-# Lines starting with # are comments and will be ignored
-# Example: RELIANCE, TCS, INFY
-#
-# These stocks will be scanned alongside stocks_to_test.txt
-# Add your new stocks below:
-
 BALAMINES
 AEQUS
 EMBDL
@@ -25,7 +17,6 @@ IBULLSLTD
 NAUKRI
 SENORES
 SKFINDUS
-ASTRAMICRO
 GANESHHOU
 BLISSGVS
 ALIVUS
@@ -38,7 +29,6 @@ KSHINTL
 EMIL
 ANANDRATHI
 CARTRADE
-ATHERENERG
 SKYGOLD
 SYRMA
 ZYDUSLIFE
@@ -52,7 +42,6 @@ MTARTECH
 SHAILY
 SPARC
 NAM-INDIA
-RRKABEL
 IDEA
 HAPPYFORGE
 RELAXO
@@ -78,7 +67,6 @@ LLOYDSME
 HONASA
 RAINBOW
 RPEL
-CAPLIPOINT
 GRAVITA
 TTKPRESTIG
 AETHER

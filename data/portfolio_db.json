@@ -1,0 +1,242 @@
+{
+    "ABB": {
+        "qty": 11,
+        "avg_cost": 7304.0
+    },
+    "ADANIENSOL": {
+        "qty": 190,
+        "avg_cost": 1591.67
+    },
+    "AKUMS": {
+        "qty": 43,
+        "avg_cost": 689.75
+    },
+    "AMBER": {
+        "qty": 26,
+        "avg_cost": 8459.96
+    },
+    "APS-SM": {
+        "qty": 250,
+        "avg_cost": 542.4
+    },
+    "ASTRAMICRO": {
+        "qty": 1,
+        "avg_cost": 1460.4
+    },
+    "ATHERENERG": {
+        "qty": 7,
+        "avg_cost": 1147.0
+    },
+    "AWHCL": {
+        "qty": 352,
+        "avg_cost": 724.78
+    },
+    "AXISCADES": {
+        "qty": 2,
+        "avg_cost": 1948.0
+    },
+    "BBOX": {
+        "qty": 125,
+        "avg_cost": 1055.41
+    },
+    "BIRLACORPN": {
+        "qty": 143,
+        "avg_cost": 1062.3
+    },
+    "CGCL": {
+        "qty": 11,
+        "avg_cost": 236.02
+    },
+    "CHOLAFIN": {
+        "qty": 50,
+        "avg_cost": 1854.0
+    },
+    "CUMMINSIND": {
+        "qty": 78,
+        "avg_cost": 5352.44
+    },
+    "DEEPINDS": {
+        "qty": 91,
+        "avg_cost": 531.04
+    },
+    "ELIN": {
+        "qty": 1633,
+        "avg_cost": 245.16
+    },
+    "ELLEN": {
+        "qty": 233,
+        "avg_cost": 588.28
+    },
+    "ENRIN": {
+        "qty": 58,
+        "avg_cost": 3693.88
+    },
+    "FINCABLES": {
+        "qty": 173,
+        "avg_cost": 1145.32
+    },
+    "FIVESTAR": {
+        "qty": 491,
+        "avg_cost": 614.74
+    },
+    "FORCEMOT": {
+        "qty": 5,
+        "avg_cost": 17805.0
+    },
+    "GESHIP": {
+        "qty": 100,
+        "avg_cost": 1678.89
+    },
+    "GOLDBEES": {
+        "qty": 2209,
+        "avg_cost": 131.45
+    },
+    "GPECO-ST": {
+        "qty": 800,
+        "avg_cost": 558.58
+    },
+    "GRSE": {
+        "qty": 2,
+        "avg_cost": 2713.0
+    },
+    "HAL": {
+        "qty": 43,
+        "avg_cost": 5044.92
+    },
+    "HINDCOPPER": {
+        "qty": 1000,
+        "avg_cost": 568.4
+    },
+    "HINDZINC": {
+        "qty": 206,
+        "avg_cost": 658.01
+    },
+    "JAYANT": {
+        "qty": 750,
+        "avg_cost": 152.1
+    },
+    "JSWINFRA": {
+        "qty": 455,
+        "avg_cost": 275.1
+    },
+    "LTFOODS": {
+        "qty": 609,
+        "avg_cost": 483.91
+    },
+    "MCX": {
+        "qty": 315,
+        "avg_cost": 2159.56
+    },
+    "MTARTECH-BE": {
+        "qty": 5,
+        "avg_cost": 6800.0
+    },
+    "NAUKRI": {
+        "qty": 32,
+        "avg_cost": 1202.4
+    },
+    "PATILAUTOM-ST": {
+        "qty": 600,
+        "avg_cost": 222.0
+    },
+    "POCL": {
+        "qty": 459,
+        "avg_cost": 1367.17
+    },
+    "POWERINDIA": {
+        "qty": 4,
+        "avg_cost": 36255.0
+    },
+    "PREMEXPLN": {
+        "qty": 378,
+        "avg_cost": 774.14
+    },
+    "PWL": {
+        "qty": 695,
+        "avg_cost": 146.69
+    },
+    "QPOWER-BE": {
+        "qty": 114,
+        "avg_cost": 1296.83
+    },
+    "RBMINFRA-SM": {
+        "qty": 400,
+        "avg_cost": 799.45
+    },
+    "RRKABEL": {
+        "qty": 174,
+        "avg_cost": 2265.03
+    },
+    "SANGHVIMOV": {
+        "qty": 766,
+        "avg_cost": 659.27
+    },
+    "SCHNEIDER": {
+        "qty": 3100,
+        "avg_cost": 261.74
+    },
+    "SKIPPER": {
+        "qty": 371,
+        "avg_cost": 567.87
+    },
+    "SKYGOLD": {
+        "qty": 128,
+        "avg_cost": 621.8690624999999
+    },
+    "SOTL": {
+        "qty": 25,
+        "avg_cost": 609.5
+    },
+    "SPORTKING": {
+        "qty": 868,
+        "avg_cost": 181.1
+    },
+    "STALLION": {
+        "qty": 292,
+        "avg_cost": 209.61
+    },
+    "STOVEKRAFT": {
+        "qty": 360,
+        "avg_cost": 949.83
+    },
+    "SUVEN": {
+        "qty": 253,
+        "avg_cost": 322.5
+    },
+    "SWELECTES": {
+        "qty": 235,
+        "avg_cost": 1206.68
+    },
+    "TEJASNET": {
+        "qty": 401,
+        "avg_cost": 585.72
+    },
+    "TEXRAIL": {
+        "qty": 1037,
+        "avg_cost": 113.16
+    },
+    "THERMAX": {
+        "qty": 147,
+        "avg_cost": 4195.81
+    },
+    "TIGERLOGS-BE": {
+        "qty": 11740,
+        "avg_cost": 56.14
+    },
+    "TORNTPOWER": {
+        "qty": 99,
+        "avg_cost": 1733.97
+    },
+    "VILAS-SM": {
+        "qty": 250,
+        "avg_cost": 574.5
+    },
+    "VPRPL-BE": {
+        "qty": 850,
+        "avg_cost": 303.8
+    },
+    "WOCKPHARMA": {
+        "qty": 50,
+        "avg_cost": 2029.63
+    }
+}
