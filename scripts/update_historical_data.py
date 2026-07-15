@@ -13,7 +13,8 @@ from data.data_fetcher import (
     to_fyers_symbol, 
     load_historical_csv, 
     save_historical_data,
-    STOCKS_FILE
+    STOCKS_FILE,
+    fetch_historical_data
 )
 from data.data_fetcher import HISTORY_URL, FYERS_APP_ID
 import requests
@@ -103,8 +104,15 @@ def main():
                 print("No new data available.")
                 
         except FileNotFoundError:
-            print("No existing CSV. Needs full fetch.")
-            fail_count += 1
+            print("No existing CSV. Fetching full history...", end=" ")
+            try:
+                new_df = fetch_historical_data(fyers_symbol, access_token, days=365)
+                save_historical_data(fyers_symbol, new_df)
+                print(f"OK ({len(new_df)} rows saved).")
+                updated_count += 1
+            except Exception as e:
+                print(f"FAILED: {e}")
+                fail_count += 1
         except Exception as e:
             print(f"FAILED: {e}")
             fail_count += 1
