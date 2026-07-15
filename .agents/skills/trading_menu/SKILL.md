@@ -20,51 +20,47 @@ When the user says "Hi", "Hello", or asks for the menu, you must reply with the 
 *Reply with a number to select an option, or describe what you need.*
 ```
 
-## Option Handlers
+## Option Handlers — Subagent Routing
 
-When the user selects an option, follow the corresponding sub-agent skill instructions:
+When the user selects an option, invoke the corresponding subagent using `invoke_subagent`:
 
-### Option 1: Dry Run (Scanner Agent)
-Follow the instructions in the `scanner-agent` skill (`.agents/skills/scanner_agent/SKILL.md`):
+### Option 1: Dry Run → Invoke `scanner-agent`
+Invoke the `scanner-agent` subagent. It will:
 1. Run `python scripts/update_historical_data.py` to refresh data.
 2. Run `python scripts/dry_run.py` to scan for signals.
-3. Cross-reference BUY signals against Portfolio.txt to mark stocks already held.
-4. Present results sorted by quality (EXCELLENT first, then GOOD).
-5. Suggest buying any new opportunities.
+3. Cross-reference BUY signals against Portfolio.txt.
+4. Report back with results sorted by quality.
 
-### Option 2: Update Historical Data
-1. Run `python scripts/update_historical_data.py`.
+### Option 2: Update Historical Data (Direct — no subagent needed)
+1. Run `python scripts/update_historical_data.py` directly.
 2. Inform the user how many stocks were updated.
 
-### Option 3: Deep Analysis (Fundamental Analyst)
-Follow the instructions in the `fundamental-analyst` skill (`.agents/skills/fundamental_analyst/SKILL.md`):
-1. If the user hasn't specified a ticker symbol, ask them for one.
-2. Run `python scripts/deep_analysis.py <TICKER>` (with `--ltp <PRICE>` if a live price is provided).
-3. Search the web for latest news, earnings, and analyst views on the ticker.
-4. Synthesize technicals + fundamentals into a final Buy/Hold/Avoid verdict.
+### Option 3: Deep Analysis → Invoke `fundamental-analyst`
+1. If the user hasn't specified a ticker symbol, ask them for one first.
+2. Invoke the `fundamental-analyst` subagent with the ticker (and optional LTP).
+3. It will run technical analysis + web research and report back with a Buy/Hold/Avoid verdict.
 
-### Option 4: Add New Stocks
-1. Run `python scripts/add_new_stocks.py`.
-2. This script will read `Newly_added_stocks.txt`, deduplicate against existing lists, append to `stocks_watchlist.txt`, fetch their historical data, and finally clear `Newly_added_stocks.txt`.
-3. Report the newly added stocks to the user. Do NOT run a backtest or dry run automatically.
+### Option 4: Add New Stocks (Direct — no subagent needed)
+1. Run `python scripts/add_new_stocks.py` directly.
+2. Report the newly added stocks. Do NOT run a backtest or dry run automatically.
 
-### Option 5: Portfolio Scan (Portfolio Watchdog)
-Follow the instructions in the `portfolio-watchdog` skill (`.agents/skills/portfolio_watchdog/SKILL.md`):
-1. Run `python scripts/portfolio_analysis.py`.
-2. Categorize stocks as SELL (🔴), CAUTION (⚠️), or STRONG HOLD (✅).
+### Option 5: Portfolio Scan → Invoke `portfolio-watchdog`
+Invoke the `portfolio-watchdog` subagent. It will:
+1. Load portfolio and run analysis.
+2. Categorize as SELL / CAUTION / STRONG HOLD.
 3. Calculate portfolio health percentage.
-4. Ask if the user wants to sell any SELL-signal positions.
+4. Report back with risk assessment.
 
-### Option 6: Trade History
-1. Run `python scripts/trades_history.py` to display the complete audit log.
-2. If the user asks to filter: `python scripts/trades_history.py --symbol <TICKER>` or `--action BUY/SELL`.
+### Option 6: Trade History (Direct — no subagent needed)
+1. Run `python scripts/trades_history.py` directly.
+2. If the user asks to filter: use `--symbol <TICKER>` or `--action BUY/SELL`.
 
-## Trade Execution (Any Context)
-When the user says "Buy X shares of Y at Z" or "Sell Y" at any point, follow the `trade-executor` skill (`.agents/skills/trade_executor/SKILL.md`):
+## Trade Execution (Any Context) → Invoke `trade-executor`
+When the user says "Buy X shares of Y at Z" or "Sell Y" or pastes a broker trade table, invoke the `trade-executor` subagent. It will:
 1. Validate the ticker and parse the order.
-2. Execute via `portfolio_db.py` (add_trade / remove_trade).
-3. Log to audit trail via `trades_history.py` (log_trade).
-4. Confirm with a formatted summary.
+2. Execute via portfolio_db.py.
+3. Log to trades_history.json audit trail.
+4. Report back with confirmation.
 
 ## Post-Execution Rule
 IMPORTANT: **Always** display the main Trading System Menu again at the very end of your response after completing ANY of the options above. Along with the menu, provide any relevant follow-up suggestions based on the task that was just completed.
